@@ -1,0 +1,43 @@
+neo4j:
+  neo4j:
+    name: knowledge-graph
+    password: "CHANGE ME"
+    resources:
+      cpu: "1"
+      memory: "2Gi"
+  services:
+    neo4j:
+      enabled: false
+  podSpec:
+    initContainers:
+    - name: get-plugins
+      image: nodematic/ubuntu-wget-unzip:22.04
+      command: ["/bin/bash", "-c"]
+      args:
+      - |
+        wget https://graphdatascience.ninja/neo4j-graph-data-science-2.4.1.zip -O /tmp/neo4j-graph-data-science-2.4.1.zip
+        unzip -o /tmp/neo4j-graph-data-science-2.4.1.zip -d /home/neo4j/plugins/
+      resources:
+        requests:
+          cpu: "1"
+          memory: "2Gi"
+        limits:
+          cpu: "1"
+          memory: "2Gi"
+      volumeMounts:
+      - name: neo4j-plugins
+        mountPath: /home/neo4j/plugins
+  volumes:
+    data:
+      mode: "defaultStorageClass"
+  additionalVolumes:
+  - name: neo4j-plugins
+    persistentVolumeClaim:
+      claimName: neo4j-plugins
+  additionalVolumeMounts:
+  - mountPath: "/var/lib/neo4j/plugins"
+    name: neo4j-plugins
+  config:
+    dbms.security.procedures.unrestricted: gds.*
+    dbms.security.procedures.allowlist: gds.*
+    server.bolt.tls_level: "DISABLED"

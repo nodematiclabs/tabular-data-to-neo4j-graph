@@ -1,0 +1,7 @@
+apiVersion: v2
+name: knowledge-graph
+version: 0.1.0
+dependencies:
+- name: neo4j
+  version: 5.9.0
+  repository: https://helm.neo4j.com/neo4j
